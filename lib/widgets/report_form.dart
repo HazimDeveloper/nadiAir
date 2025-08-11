@@ -287,39 +287,41 @@ class _ReportFormState extends State<ReportForm> {
                       items: _waterProblems.map((problem) {
                         return DropdownMenuItem<String>(
                           value: problem['value'],
-                          child: Row(
-                            children: [
-                              Icon(
-                                problem['icon'],
-                                size: 18,
-                                color: const Color(0xFF1976D2),
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text(
-                                      problem['value'],
-                                      style: GoogleFonts.poppins(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                    Text(
-                                      problem['description'],
-                                      style: GoogleFonts.poppins(
-                                        fontSize: 11,
-                                        color: Colors.grey[600],
-                                      ),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ],
+                          child: SingleChildScrollView(
+                            child: Row(
+                              children: [
+                                Icon(
+                                  problem['icon'],
+                                  size: 18,
+                                  color: const Color(0xFF1976D2),
                                 ),
-                              ),
-                            ],
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        problem['value'],
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                      Text(
+                                        problem['description'],
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 11,
+                                          color: Colors.grey[600],
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         );
                       }).toList(),
@@ -334,7 +336,7 @@ class _ReportFormState extends State<ReportForm> {
                         color: const Color(0xFF1976D2),
                       ),
                       isExpanded: true,
-                      menuMaxHeight: 300,
+                      menuMaxHeight: 200, // Reduced from 300 to prevent overflow
                     ),
                   ),
                   const SizedBox(height: 16),
