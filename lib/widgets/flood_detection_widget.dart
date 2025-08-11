@@ -39,23 +39,48 @@ class _FloodDetectionWidgetState extends State<FloodDetectionWidget>
   void _startAnalysis() {
     _pulseController.repeat(reverse: true);
     
-    // Simulate flood risk analysis based on weather data
-    Future.delayed(const Duration(seconds: 2), () {
-      if (mounted) {
-        _analyzeFloodRisk();
-      }
-    });
+    // Check if weather data is ready, if not wait and retry
+    _checkAndAnalyze();
+  }
+
+  void _checkAndAnalyze() {
+    final weatherProvider = context.read<WeatherProvider>();
+    
+    if (weatherProvider.weatherData != null) {
+      // Weather data is ready, analyze immediately
+      Future.delayed(const Duration(milliseconds: 500), () {
+        if (mounted) {
+          _analyzeFloodRisk();
+        }
+      });
+    } else if (!weatherProvider.isLoading) {
+      // Weather data not loading and not available, load it first
+      weatherProvider.loadWeatherData().then((_) {
+        Future.delayed(const Duration(milliseconds: 500), () {
+          if (mounted) {
+            _analyzeFloodRisk();
+          }
+        });
+      });
+    } else {
+      // Weather is still loading, wait and retry
+      Future.delayed(const Duration(seconds: 1), () {
+        if (mounted) {
+          _checkAndAnalyze();
+        }
+      });
+    }
   }
 
   void _analyzeFloodRisk() {
     final weatherProvider = context.read<WeatherProvider>();
     final weather = weatherProvider.weatherData;
     
+    String risk;
+    Color color;
+    IconData icon;
+    
     if (weather != null) {
-      String risk;
-      Color color;
-      IconData icon;
-      
       // Determine flood risk based on humidity, temperature, and conditions
       if (weather.humidity > 80 && weather.condition.toLowerCase().contains('hujan')) {
         risk = 'TINGGI';
@@ -72,16 +97,21 @@ class _FloodDetectionWidgetState extends State<FloodDetectionWidget>
         color = Colors.green;
         icon = Icons.shield_rounded;
       }
-      
-      setState(() {
-        _floodRisk = risk;
-        _riskColor = color;
-        _riskIcon = icon;
-        _isAnalyzing = false;
-      });
-      
-      _pulseController.stop();
+    } else {
+      // Fallback if weather data still not available
+      risk = 'SEDERHANA';
+      color = Colors.orange;
+      icon = Icons.help_rounded;
     }
+    
+    setState(() {
+      _floodRisk = risk;
+      _riskColor = color;
+      _riskIcon = icon;
+      _isAnalyzing = false;
+    });
+    
+    _pulseController.stop();
   }
 
   @override
@@ -126,7 +156,7 @@ class _FloodDetectionWidgetState extends State<FloodDetectionWidget>
                 ),
                 const SizedBox(width: 8),
                 Expanded(
-                  child:                   Text(
+                  child: Text(
                     'Risiko Banjir',
                     style: GoogleFonts.poppins(
                       fontSize: 12,
@@ -175,7 +205,6 @@ class _FloodDetectionWidgetState extends State<FloodDetectionWidget>
                           },
                         ),
                         
-                                                  
                         const SizedBox(height: 8),
                         
                         Text(
@@ -193,7 +222,7 @@ class _FloodDetectionWidgetState extends State<FloodDetectionWidget>
                           Text(
                             _getRiskDescription(),
                             style: GoogleFonts.poppins(
-                              fontSize: 9,
+                              fontSize: 11,
                               color: Colors.grey[600],
                             ),
                             textAlign: TextAlign.center,
@@ -207,32 +236,35 @@ class _FloodDetectionWidgetState extends State<FloodDetectionWidget>
                   
                   // Action Button or Status
                   if (_isAnalyzing)
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: Colors.grey[100],
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          SizedBox(
-                            width: 12,
-                            height: 12,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.grey[600],
+                    Center(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[100],
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              width: 12,
+                              height: 12,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.grey[600],
+                              ),
                             ),
-                          ),
-                          const SizedBox(width: 6),
-                          Text(
-                            'Menganalisis...',
-                            style: GoogleFonts.poppins(
-                              fontSize: 10,
-                              color: Colors.grey[600],
+                            const SizedBox(width: 6),
+                            Text(
+                              'Menganalisis...',
+                              style: GoogleFonts.poppins(
+                                fontSize: 10,
+                                color: Colors.grey[600],
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     )
                   else
@@ -279,11 +311,16 @@ class _FloodDetectionWidgetState extends State<FloodDetectionWidget>
   }
 
   String _getRiskDescription() {
+    final weatherProvider = context.read<WeatherProvider>();
+    final weather = weatherProvider.weatherData;
+    
     switch (_floodRisk) {
       case 'TINGGI':
         return 'Berhati-hati\nPantau kawasan';
       case 'SEDERHANA':
-        return 'Biasa sahaja\nPantau cuaca';
+        return weather != null 
+            ? 'Biasa sahaja\nPantau cuaca'
+            : 'Data cuaca\ntidak lengkap';
       case 'RENDAH':
         return 'Selamat\nKeadaan normal';
       default:
@@ -376,12 +413,15 @@ class _FloodDetectionWidgetState extends State<FloodDetectionWidget>
                         // Weather factors
                         _buildFactorCard(
                           'Kelembapan Udara',
-                          '${weather?.humidity ?? 0}%',
-                          weather != null && weather.humidity > 70 
-                              ? 'Tinggi - Risiko hujan meningkat'
-                              : 'Normal - Keadaan stabil',
-                          weather != null && weather.humidity > 70 
-                              ? Colors.orange : Colors.green,
+                          weather != null ? '${weather.humidity}%' : 'N/A',
+                          weather != null 
+                              ? (weather.humidity > 70 
+                                  ? 'Tinggi - Risiko hujan meningkat'
+                                  : 'Normal - Keadaan stabil')
+                              : 'Data cuaca tidak tersedia',
+                          weather != null 
+                              ? (weather.humidity > 70 ? Colors.orange : Colors.green)
+                              : Colors.grey,
                         ),
                         
                         const SizedBox(height: 12),
@@ -389,11 +429,14 @@ class _FloodDetectionWidgetState extends State<FloodDetectionWidget>
                         _buildFactorCard(
                           'Kondisi Cuaca',
                           weather?.condition ?? 'Tidak diketahui',
-                          weather?.condition.toLowerCase().contains('hujan') == true
-                              ? 'Hujan aktif - Pantau paras air'
-                              : 'Cuaca stabil',
-                          weather?.condition.toLowerCase().contains('hujan') == true
-                              ? Colors.red : Colors.green,
+                          weather != null
+                              ? (weather.condition.toLowerCase().contains('hujan')
+                                  ? 'Hujan aktif - Pantau paras air'
+                                  : 'Cuaca stabil')
+                              : 'Data cuaca tidak tersedia',
+                          weather != null
+                              ? (weather.condition.toLowerCase().contains('hujan') ? Colors.red : Colors.green)
+                              : Colors.grey,
                         ),
                         
                         const SizedBox(height: 24),
@@ -430,7 +473,7 @@ class _FloodDetectionWidgetState extends State<FloodDetectionWidget>
                               Text(
                                 _getRecommendations(),
                                 style: GoogleFonts.poppins(
-                                  fontSize: 12,
+                                  fontSize: 14,
                                   color: Colors.grey[700],
                                   height: 1.4,
                                 ),
@@ -511,7 +554,7 @@ class _FloodDetectionWidgetState extends State<FloodDetectionWidget>
                 Text(
                   description,
                   style: GoogleFonts.poppins(
-                    fontSize: 11,
+                    fontSize: 13,
                     color: Colors.grey[600],
                   ),
                 ),
@@ -524,6 +567,13 @@ class _FloodDetectionWidgetState extends State<FloodDetectionWidget>
   }
 
   String _getRecommendations() {
+    final weatherProvider = context.read<WeatherProvider>();
+    final weather = weatherProvider.weatherData;
+    
+    if (weather == null) {
+      return '• Tidak dapat mengakses data cuaca terkini\n• Pantau ramalan cuaca dari sumber lain\n• Periksa sistem saliran kawasan rumah\n• Sediakan kit kecemasan asas';
+    }
+    
     switch (_floodRisk) {
       case 'TINGGI':
         return '• Pantau amaran cuaca secara berkala\n• Elak kawasan rendah dan mudah banjir\n• Sediakan pelan pemindahan kecemasan\n• Simpan bekalan makanan dan air';

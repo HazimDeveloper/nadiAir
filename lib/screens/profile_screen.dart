@@ -43,7 +43,7 @@ class ProfileScreen extends StatelessWidget {
                       ),
                     ),
                     const Text(
-                      'Bergabung pada Januari 2025',
+                      'Terima Kasih Kerana Join Kami',
                       style: TextStyle(color: Colors.grey),
                     ),
                   ],
@@ -55,34 +55,6 @@ class ProfileScreen extends StatelessWidget {
             // User Stats
             const UserStats(),
             const SizedBox(height: 16),
-            
-            // Settings
-            Card(
-              child: Column(
-                children: [
-                  _buildSettingTile(
-                    icon: Icons.notifications,
-                    title: 'Notifikasi',
-                    onTap: () {},
-                  ),
-                  _buildSettingTile(
-                    icon: Icons.location_on,
-                    title: 'Lokasi',
-                    onTap: () {},
-                  ),
-                  _buildSettingTile(
-                    icon: Icons.help,
-                    title: 'Bantuan',
-                    onTap: () {},
-                  ),
-                  _buildSettingTile(
-                    icon: Icons.info,
-                    title: 'Tentang App',
-                    onTap: () {},
-                  ),
-                ],
-              ),
-            ),
           ],
         ),
       ),

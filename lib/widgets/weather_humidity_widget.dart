@@ -148,29 +148,28 @@ class WeatherHumidityWidget extends StatelessWidget {
                         
                         const SizedBox(height: 3),
                         
-                        // Humidity Status and Explanation
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: _getHumidityColor(weather.humidity).withOpacity(0.3),
-                            borderRadius: BorderRadius.circular(6),
-                            border: Border.all(
-                              color: _getHumidityColor(weather.humidity).withOpacity(0.5),
-                              width: 1,
+                              Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: _getHumidityColor(weather.humidity).withOpacity(0.3),
+                              borderRadius: BorderRadius.circular(6),
+                              border: Border.all(
+                                color: _getHumidityColor(weather.humidity).withOpacity(0.5),
+                                width: 1,
+                              ),
+                            ),
+                            child: Text(
+                              _getHumidityStatus(weather.humidity),
+                              style: GoogleFonts.poppins(
+                                fontSize: 8,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                              ),
+                              textAlign: TextAlign.center,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
-                          child: Text(
-                            _getHumidityStatus(weather.humidity),
-                            style: GoogleFonts.poppins(
-                              fontSize: 6,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
-                            ),
-                            textAlign: TextAlign.center,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
                       ],
                     ),
                   ),

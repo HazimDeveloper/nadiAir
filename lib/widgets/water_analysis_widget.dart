@@ -125,45 +125,49 @@ class _WaterAnalysisWidgetState extends State<WaterAnalysisWidget>
   }
 
   Widget _buildLoadingState() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Stack(
-          alignment: Alignment.center,
-          children: [
-            SizedBox(
-              width: 50,
-              height: 50,
-              child: CircularProgressIndicator(
-                strokeWidth: 3,
-                color: const Color(0xFF4CAF50),
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Stack(
+            alignment: Alignment.center,
+            children: [
+              SizedBox(
+                width: 50,
+                height: 50,
+                child: CircularProgressIndicator(
+                  strokeWidth: 3,
+                  color: const Color(0xFF4CAF50),
+                ),
               ),
-            ),
-            Container(
-              width: 30,
-              height: 30,
-              decoration: BoxDecoration(
-                color: const Color(0xFF4CAF50).withOpacity(0.1),
-                shape: BoxShape.circle,
+              Container(
+                width: 30,
+                height: 30,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF4CAF50).withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.auto_awesome_rounded,
+                  color: Color(0xFF4CAF50),
+                  size: 16,
+                ),
               ),
-              child: const Icon(
-                Icons.auto_awesome_rounded,
-                color: Color(0xFF4CAF50),
-                size: 16,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        Text(
-          'Menganalisis...',
-          style: GoogleFonts.poppins(
-            fontSize: 12,
-            fontWeight: FontWeight.w600,
-            color: const Color(0xFF4CAF50),
+            ],
           ),
-        ),
-      ],
+          const SizedBox(height: 12),
+          Text(
+            'Menganalisis...',
+            style: GoogleFonts.poppins(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: const Color(0xFF4CAF50),
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
     );
   }
 
@@ -205,40 +209,44 @@ class _WaterAnalysisWidgetState extends State<WaterAnalysisWidget>
   }
 
   Widget _buildEmptyState() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: Colors.grey[100],
-            shape: BoxShape.circle,
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.grey[100],
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.water_drop_outlined,
+              color: Colors.grey[400],
+              size: 24,
+            ),
           ),
-          child: Icon(
-            Icons.water_drop_outlined,
-            color: Colors.grey[400],
-            size: 24,
+          const SizedBox(height: 8),
+          Text(
+            'Tiada Analisis',
+            style: GoogleFonts.poppins(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: Colors.grey[600],
+            ),
+            textAlign: TextAlign.center,
           ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          'Tiada Analisis',
-          style: GoogleFonts.poppins(
-            fontSize: 10,
-            fontWeight: FontWeight.w600,
-            color: Colors.grey[600],
+          const SizedBox(height: 4),
+          Text(
+            'Scan air untuk\nmelihat hasil',
+            style: GoogleFonts.poppins(
+              fontSize: 10,
+              color: Colors.grey[500],
+            ),
+            textAlign: TextAlign.center,
           ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          'Scan air untuk\nmelihat hasil',
-          style: GoogleFonts.poppins(
-            fontSize: 8,
-            color: Colors.grey[500],
-          ),
-          textAlign: TextAlign.center,
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -302,7 +310,7 @@ class _WaterAnalysisWidgetState extends State<WaterAnalysisWidget>
                         Text(
                           analysis.categoryDescription,
                           style: GoogleFonts.poppins(
-                            fontSize: 8,
+                            fontSize: 10,
                             color: Colors.grey[600],
                           ),
                           textAlign: TextAlign.center,
@@ -363,6 +371,7 @@ class _WaterAnalysisWidgetState extends State<WaterAnalysisWidget>
       isScrollControlled: true,
       builder: (context) => Container(
         height: MediaQuery.of(context).size.height * 0.75,
+        width: double.infinity,
         margin: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: Colors.white,
@@ -372,6 +381,7 @@ class _WaterAnalysisWidgetState extends State<WaterAnalysisWidget>
           padding: const EdgeInsets.all(24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.max,
             children: [
               // Handle
               Center(
@@ -389,6 +399,7 @@ class _WaterAnalysisWidgetState extends State<WaterAnalysisWidget>
               
               // Header with quality
               Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
                     padding: const EdgeInsets.all(12),
@@ -413,6 +424,7 @@ class _WaterAnalysisWidgetState extends State<WaterAnalysisWidget>
                             fontSize: 20,
                             fontWeight: FontWeight.w600,
                           ),
+                          softWrap: true,
                         ),
                         Text(
                           analysis.qualityMalay,
@@ -421,6 +433,7 @@ class _WaterAnalysisWidgetState extends State<WaterAnalysisWidget>
                             fontWeight: FontWeight.w700,
                             color: analysis.qualityColor,
                           ),
+                          softWrap: true,
                         ),
                       ],
                     ),
@@ -448,11 +461,59 @@ class _WaterAnalysisWidgetState extends State<WaterAnalysisWidget>
                       
                       // Category explanation
                       if (analysis.explanation.isNotEmpty)
-                        _buildInfoCard(
-                          'Penjelasan Teknikal',
-                          analysis.categoryDescription,
-                          analysis.explanation,
-                          Colors.blue,
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Colors.blue.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: Colors.blue.withOpacity(0.3),
+                            ),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      'Penjelasan Teknikal',
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.black87,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Flexible(
+                                    child: Text(
+                                      analysis.categoryDescription,
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w700,
+                                        color: Colors.blue,
+                                      ),
+                                      textAlign: TextAlign.end,
+                                      softWrap: true,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                analysis.explanation,
+                                style: GoogleFonts.poppins(
+                                  fontSize: 13,
+                                  color: Colors.grey[600],
+                                  height: 1.3,
+                                ),
+                                softWrap: true,
+                              ),
+                            ],
+                          ),
                         ),
                       
                       const SizedBox(height: 16),
@@ -460,6 +521,7 @@ class _WaterAnalysisWidgetState extends State<WaterAnalysisWidget>
                       // Recommendations
                       if (analysis.recommendation.isNotEmpty)
                         Container(
+                          width: double.infinity,
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
                             color: analysis.qualityColor.withOpacity(0.1),
@@ -479,12 +541,14 @@ class _WaterAnalysisWidgetState extends State<WaterAnalysisWidget>
                                     size: 20,
                                   ),
                                   const SizedBox(width: 8),
-                                  Text(
-                                    'Cadangan Tindakan',
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
-                                      color: analysis.qualityColor,
+                                  Expanded(
+                                    child: Text(
+                                      'Cadangan Tindakan',
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                        color: analysis.qualityColor,
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -493,10 +557,11 @@ class _WaterAnalysisWidgetState extends State<WaterAnalysisWidget>
                               Text(
                                 analysis.recommendation,
                                 style: GoogleFonts.poppins(
-                                  fontSize: 13,
+                                  fontSize: 14,
                                   color: Colors.grey[700],
                                   height: 1.4,
                                 ),
+                                softWrap: true,
                               ),
                             ],
                           ),
@@ -506,12 +571,14 @@ class _WaterAnalysisWidgetState extends State<WaterAnalysisWidget>
                       
                       // Timestamp
                       Container(
+                        width: double.infinity,
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
                           color: Colors.grey[100],
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Icon(
                               Icons.access_time_rounded,
@@ -519,11 +586,14 @@ class _WaterAnalysisWidgetState extends State<WaterAnalysisWidget>
                               size: 16,
                             ),
                             const SizedBox(width: 8),
-                            Text(
-                              'Dianalisis pada ${_formatTimestamp(analysis.timestamp)}',
-                              style: GoogleFonts.poppins(
-                                fontSize: 11,
-                                color: Colors.grey[600],
+                            Expanded(
+                              child: Text(
+                                'Dianalisis pada ${_formatTimestamp(analysis.timestamp)}',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 11,
+                                  color: Colors.grey[600],
+                                ),
+                                softWrap: true,
                               ),
                             ),
                           ],
@@ -568,6 +638,7 @@ class _WaterAnalysisWidgetState extends State<WaterAnalysisWidget>
 
   Widget _buildInfoCard(String title, String value, String description, Color color) {
     return Container(
+      width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: color.withOpacity(0.1),
@@ -581,21 +652,28 @@ class _WaterAnalysisWidgetState extends State<WaterAnalysisWidget>
         children: [
           Row(
             children: [
-              Text(
-                title,
-                style: GoogleFonts.poppins(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black87,
+              Expanded(
+                child: Text(
+                  title,
+                  style: GoogleFonts.poppins(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black87,
+                  ),
                 ),
               ),
-              const Spacer(),
-              Text(
-                value,
-                style: GoogleFonts.poppins(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                  color: color,
+              const SizedBox(width: 8),
+              Flexible(
+                child: Text(
+                  value,
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: color,
+                  ),
+                  textAlign: TextAlign.end,
+                  softWrap: true,
+                  overflow: TextOverflow.visible,
                 ),
               ),
             ],
@@ -604,10 +682,12 @@ class _WaterAnalysisWidgetState extends State<WaterAnalysisWidget>
           Text(
             description,
             style: GoogleFonts.poppins(
-              fontSize: 11,
+              fontSize: 13,
               color: Colors.grey[600],
               height: 1.3,
             ),
+            softWrap: true,
+            overflow: TextOverflow.visible,
           ),
         ],
       ),

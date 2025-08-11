@@ -27,7 +27,7 @@ class UserStats extends StatelessWidget {
                   child: _StatItem(
                     icon: Icons.camera_alt,
                     title: 'Imbasan',
-                    value: '12',
+                    value: '0',
                     color: Colors.blue,
                   ),
                 ),
@@ -35,7 +35,7 @@ class UserStats extends StatelessWidget {
                   child: _StatItem(
                     icon: Icons.report,
                     title: 'Laporan',
-                    value: '3',
+                    value: '0',
                     color: Colors.green,
                   ),
                 ),
@@ -43,7 +43,7 @@ class UserStats extends StatelessWidget {
                   child: _StatItem(
                     icon: Icons.thumb_up,
                     title: 'Sumbangan',
-                    value: '8',
+                    value: '0',
                     color: Colors.purple,
                   ),
                 ),
